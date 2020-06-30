@@ -2,7 +2,7 @@
 Binance Python API – A Step-by-Step Guide - AlgoTrading101 Blog
 ===============================================================
 
-This is the code used in `Binance Python API – A Step<https://algotrading101.com/learn/binance-python-api/>`_ published on the Algotrading101 Blog
+This is the code used in `Binance Python API – A Step-by-Step Guide <https://algotrading101.com/learn/binance-python-api/>`_ published on the Algotrading101 Blog
 
 -----------------
 Table of Contents
