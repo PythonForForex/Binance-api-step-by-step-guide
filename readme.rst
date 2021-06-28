@@ -4,6 +4,7 @@ Binance Python API – A Step-by-Step Guide - AlgoTrading101 Blog
 
 This is the code used in `Binance Python API – A Step-by-Step Guide <https://algotrading101.com/learn/binance-python-api/>`_ published on the Algotrading101 Blog
 
+** The code and article were updated on June 28, 2021 to work with the latest version of Python-Binance (v0.7.10)
 -----------------
 Table of Contents
 -----------------
@@ -31,12 +32,10 @@ Table of Contents
 Requirements
 ------------
 
-* `python <https://www.python.org>`_ >= 2.7, 3.4+
-* `python_binance <https://github.com/sammchardy/python-binance>`_ (tested to work with >= 0.7.5 )
+* `python <https://www.python.org>`_ >= 3.4+
+* `python_binance <https://github.com/sammchardy/python-binance>`_ (tested to work with >= 0.7.10 )
 * `bta_lib <https://github.com/mementum/bta-lib>`_ (tested to work with >= 1.0.0 )
 * `pandas <https://github.com/pandas-dev/pandas>`_ (tested to work with >= 1.0.3 )
-* Twisted (tested to work with >= 20.3.0 )
-* binance (tested to work with >= 0.3 )
 
 -----------
 Author Info

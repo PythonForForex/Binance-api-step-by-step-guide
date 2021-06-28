@@ -1,11 +1,9 @@
 import os
 from time import sleep
 
-from binance.client import Client
-from binance.exceptions import BinanceAPIException, BinanceOrderException
-from binance.websockets import BinanceSocketManager
-from twisted.internet import reactor
 import pandas as pd
+from binance import ThreadedWebsocketManager
+from binance.client import Client
 
 # init
 api_key = os.environ.get('binance_api')
@@ -19,13 +17,14 @@ def btc_pairs_trade(msg):
 	if msg['e'] != 'error':
 		price['BTCUSDT'].loc[len(price['BTCUSDT'])] = [pd.Timestamp.now(), float(msg['c'])]
 	else:
-		price['error']:True
+		price['error'] = True
 	
 
 # init and start the WebSocket
-bsm = BinanceSocketManager(client)
-conn_key = bsm.start_symbol_ticker_socket('BTCUSDT', btc_pairs_trade)
+bsm = ThreadedWebsocketManager()
 bsm.start()
+bsm.start_symbol_ticker_socket(symbol='BTCUSDT', callback=btc_pairs_trade)
+
 
 ## main
 while len(price['BTCUSDT']) == 0:
@@ -38,7 +37,8 @@ while True:
 	# error check to make sure WebSocket is working
 	if price['error']:
 		# stop and restart socket
-		bsm.stop_socket(conn_key)
+		bsm.stop()
+		sleep(2)
 		bsm.start()
 		price['error'] = False
 	else:
@@ -52,26 +52,18 @@ while True:
 			try:
 				order = client.futures_create_order(symbol='ETHUSDT', side='SELL', type='MARKET', quantity=100)
 				break
-			except BinanceAPIException as e:
-				# error handling goes here
-				print(e)
-			except BinanceOrderException as e:
-				# error handling goes here
+			except Exception as e:
 				print(e)
 
 		elif df.price.iloc[-1] > min_price * 1.05:
 			try:
 				order = client.futures_create_order(symbol='ETHUSDT', side='BUY', type='MARKET', quantity=100)
 				break
-			except BinanceAPIException as e:
-				# error handling goes here
+			except Exception as e:
 				print(e)
-			except BinanceOrderException as e:
-				# error handling goes here
-				print(e)
+
 	sleep(0.1)
 
 
 # properly stop and terminate WebSocket
-bsm.stop_socket(conn_key)
-reactor.stop()
+bsm.stop()

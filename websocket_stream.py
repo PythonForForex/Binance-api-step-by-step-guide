@@ -1,42 +1,44 @@
-import os
 from time import sleep
 
-from binance.client import Client
-from binance.websockets import BinanceSocketManager
-from twisted.internet import reactor
+from binance import ThreadedWebsocketManager
 
-# init
-api_key = os.environ.get('binance_api')
-api_secret = os.environ.get('binance_secret')
 
-client = Client(api_key, api_secret)
 btc_price = {'error':False}
 
 def btc_trade_history(msg):
 	''' define how to process incoming WebSocket messages '''
 	if msg['e'] != 'error':
 		print(msg['c'])
+		
 		btc_price['last'] = msg['c']
 		btc_price['bid'] = msg['b']
 		btc_price['last'] = msg['a']
+		btc_price['error'] = False
 	else:
 		btc_price['error'] = True
 
 
 # init and start the WebSocket
-bsm = BinanceSocketManager(client)
-conn_key = bsm.start_symbol_ticker_socket('BTCUSDT', btc_trade_history)
+bsm = ThreadedWebsocketManager()
 bsm.start()
+
+# subscribe to a stream
+bsm.start_symbol_ticker_socket(callback=btc_trade_history, symbol='BTCUSDT')
 
 # put script to sleep to allow WebSocket to run for a while
 # this is just for example purposes
-sleep(30)
+sleep(2)
+
+# add a second stream
+bsm.start_symbol_ticker_socket(callback=btc_trade_history, symbol='ETHUSDT')
+
+# put script to sleep to allow WebSocket to run for a while
+# this is just for example purposes
+sleep(2)
 
 # stop websocket
-bsm.stop_socket(conn_key)
+bsm.stop()
 
-# properly terminate WebSocket
-reactor.stop()
-
-# print out all the available WebSocket methods and details
-#help(BinanceSocketManager)
+sleep(2)
+# display more info about the various websocket streams
+help(ThreadedWebsocketManager)
